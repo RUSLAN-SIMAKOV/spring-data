@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Source("/data/criminals.csv")
 public class Criminal {
 
     private long id;
