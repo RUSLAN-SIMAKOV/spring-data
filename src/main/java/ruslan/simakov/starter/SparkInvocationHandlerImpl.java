@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import lombok.Builder;
 import org.apache.spark.sql.Dataset;
@@ -7,7 +7,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import scala.Tuple2;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ public class SparkInvocationHandlerImpl implements SparkInvocationHandler {
     private DataExtractor dataExtractor;
     private Map<Method,List<Tuple2<SparkTransformation, List<String>>>> transformationChain;
     private Map<Method,Finalizer> finalizerMap;
+    private FinalizerPostProcessor finalizerPostProcessor;
     private ConfigurableApplicationContext ctx;
 
     @Override
@@ -34,6 +34,6 @@ public class SparkInvocationHandlerImpl implements SparkInvocationHandler {
         }
         Finalizer finalizer = finalizerMap.get(method);
         Object retVal = finalizer.doAction(rowDataset, modelClass);
-        return retVal;
+        return finalizerPostProcessor.postFinalize(retVal);
     }
 }

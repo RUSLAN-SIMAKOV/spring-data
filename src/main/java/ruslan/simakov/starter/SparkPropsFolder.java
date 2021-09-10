@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

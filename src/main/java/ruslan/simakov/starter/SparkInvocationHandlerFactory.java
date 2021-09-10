@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -74,6 +74,7 @@ public class SparkInvocationHandlerFactory {
                 .finalizerMap(method2Finalizer)
                 .dataExtractor(dataExtractor)
                 .pathToData(pathToData)
+                .finalizerPostProcessor(new FinalizerPostProcessor(realCtx))
                 .ctx(realCtx)
                 .build();
         return sparkInvocationHandler;

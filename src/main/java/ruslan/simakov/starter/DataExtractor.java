@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

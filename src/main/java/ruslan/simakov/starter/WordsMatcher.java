@@ -1,8 +1,7 @@
-package starter;
+package ruslan.simakov.starter;
 
 import java.beans.Introspector;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 

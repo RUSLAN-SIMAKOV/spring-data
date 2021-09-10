@@ -1,15 +1,13 @@
-package starter;
+package ruslan.simakov.starter;
 
 import lombok.SneakyThrows;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.springframework.stereotype.Component;
 
 import javax.lang.model.type.ArrayType;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +24,7 @@ public class CollectFinalizerImpl implements Finalizer {
         for (String fieldName : listFieldNames) {
             ParameterizedType genericType = (ParameterizedType) modelClass.getDeclaredField(fieldName).getGenericType();
             Class c = (Class) genericType.getActualTypeArguments()[0];
-            rowDataset.withColumn(fieldName, functions.lit(null).cast(DataTypes.createStructType(Encoders.bean(c).schema().fields())));
+            rowDataset = rowDataset.withColumn(fieldName, functions.lit(null).cast(DataTypes.createStructType(Encoders.bean(c).schema().fields())));
         }
         return rowDataset.as(encoder).collectAsList();
     }

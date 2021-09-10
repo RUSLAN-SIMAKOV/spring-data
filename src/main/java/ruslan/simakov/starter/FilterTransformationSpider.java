@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,17 +1,15 @@
-package starter;
+package ruslan.simakov.starter;
 
-import org.apache.spark.SparkContext;
-import org.apache.spark.SparkContext$;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-@Component("csv")
-public class CsvDataExtractor implements DataExtractor {
+@Component("json")
+public class JsonDataExtractor implements DataExtractor {
     @Override
     public Dataset<Row> readData(String pathToData, ConfigurableApplicationContext context) {
-        return context.getBean(SparkSession.class).read().option("header", true).option("inferSchema", true).csv(pathToData);
+        return context.getBean(SparkSession.class).read().json(pathToData);
     }
 }

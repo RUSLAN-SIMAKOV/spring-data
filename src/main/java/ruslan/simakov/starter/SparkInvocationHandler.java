@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import java.lang.reflect.InvocationHandler;
 

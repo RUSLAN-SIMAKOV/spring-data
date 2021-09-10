@@ -1,1 +1,2 @@
-ACI
+org.springframework.context.ApplicationContextInitializer = ruslan.simakov.starter.SparkDataApplicationContextInitializer
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = ruslan.simakov.lazycollection.StartConf

@@ -1,4 +1,4 @@
-package starter;
+package ruslan.simakov.starter;
 
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -17,6 +17,8 @@ public class SparkDataApplicationContextInitializer implements ApplicationContex
         AnnotationConfigApplicationContext tmpCtx = new AnnotationConfigApplicationContext(InternalConf.class);
         SparkInvocationHandlerFactory sparkInvocationHandlerFactory = tmpCtx.getBean(SparkInvocationHandlerFactory.class);
         sparkInvocationHandlerFactory.setRealCtx(context);
+        DataExtractorResolver dataExtractorResolver = tmpCtx.getBean(DataExtractorResolver.class);
+        context.getBeanFactory().registerSingleton("extractorResolverForSpark", dataExtractorResolver);
         tmpCtx.close();
 
         registerSparkBeans(context);
