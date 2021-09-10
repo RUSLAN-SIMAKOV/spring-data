@@ -1,9 +1,14 @@
 package starter;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 import ruslan.simakov.Source;
 import ruslan.simakov.SparkRepository;
+import scala.Tuple2;
 
+import java.beans.Introspector;
 import java.beans.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,12 +18,16 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
+@Component
+@RequiredArgsConstructor
 public class SparkInvocationHandlerFactory {
 
-    private DataExtractorResolver dataResolver;
-    private Map<String, TransformationSpider> transformationSpiderMap;
-    private Map<Method, Finalizer> finalizerMap;
-    private ConfigurableApplicationContext ctx;
+    private final DataExtractorResolver dataResolver;
+    private final Map<String, TransformationSpider> transformationSpiderMap;
+    private final Map<Method, Finalizer> finalizerMap;
+
+    @Setter
+    private ConfigurableApplicationContext realCtx;
 
     public SparkInvocationHandler create(Class<? extends SparkRepository> repoInterface) {
         ParameterizedType genericInterface = (ParameterizedType) repoInterface.getGenericInterfaces()[0];
@@ -31,20 +40,20 @@ public class SparkInvocationHandlerFactory {
         String pathToData = modelClass.getAnnotation(Source.class).value();
         DataExtractor dataExtractor = dataResolver.resolve(pathToData);
 
-        Map<Method, List<SparkTransformation>> transformationChain = new HashMap<>();
+        Map<Method, List<Tuple2<SparkTransformation, List<String>>>> transformationChain = new HashMap<>();
         Map<Method, Finalizer> method2Finalizer = new HashMap<>();
 
         Method[] methods = repoInterface.getMethods();
         for (Method method : methods) {
             TransformationSpider currentSpider = null;
-            List<SparkTransformation> transformations = new ArrayList<>();
+            List<Tuple2<SparkTransformation, List<String>>> transformations = new ArrayList<>();
             List<String> methodWords = new ArrayList<>(asList(method.getName().split("(?=\\p{Upper})")));
             while (methodWords.size() > 1) {
                 String strategyName = WordsMatcher.findAndRemoveMatchingPiecesIfExist(transformationSpiderMap.keySet(), methodWords);
                 if (!strategyName.isEmpty()) {
                     currentSpider = transformationSpiderMap.get(strategyName);
                 }
-                transformations.add(currentSpider.createTransformation(methodWords));
+                transformations.add(currentSpider.createTransformation(methodWords, fieldsName));
 
             }
 
@@ -52,7 +61,7 @@ public class SparkInvocationHandlerFactory {
 
             String finalizerName = "collect";
             if (methodWords.size() == 1) {
-                finalizerName = methodWords.get(0);
+                finalizerName = Introspector.decapitalize(methodWords.get(0));
             }
             Finalizer finalizer = finalizerMap.get(finalizerName);
             method2Finalizer.put(method, finalizer);
@@ -65,7 +74,7 @@ public class SparkInvocationHandlerFactory {
                 .finalizerMap(method2Finalizer)
                 .dataExtractor(dataExtractor)
                 .pathToData(pathToData)
-                .ctx(ctx)
+                .ctx(realCtx)
                 .build();
         return sparkInvocationHandler;
     }
